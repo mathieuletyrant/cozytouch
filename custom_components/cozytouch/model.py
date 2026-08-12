@@ -191,6 +191,14 @@ def get_model_infos(modelId: int, zoneName: str | None = None):
         modelInfos["HVACModes"] = {
             0: HVACMode.OFF,
         }
+
+    elif modelId == 1758:
+        # AC gateway, drives the same 557-561 units as the 556 Naviclim hub
+        modelInfos["name"] = "HUB Navizone"
+        modelInfos["type"] = CozytouchDeviceType.HUB
+        modelInfos["HVACModes"] = {
+            0: HVACMode.OFF,
+        }
         
     elif (modelId >= 557 and modelId <= 561) or modelId == 1734:
         name = "Air Conditioner "
