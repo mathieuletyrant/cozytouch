@@ -27,6 +27,8 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, Any]:
     hub = Hub(hass, data["username"], data["password"])
     result = await hub.test_connection()
     if not result:
+        # the caller only closes the hub it gets back, so close it on the way out
+        await hub.close()
         raise CannotConnect
 
     return hub

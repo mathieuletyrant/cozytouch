@@ -13,7 +13,7 @@ from aiohttp import ClientError, ClientSession, ClientTimeout, ContentTypeError,
 from homeassistant import exceptions
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
 from .capability import get_capability_infos
@@ -148,6 +148,15 @@ class Hub(DataUpdateCoordinator):
                     timeout=REQUEST_TIMEOUT,
                 ) as response:
                     json_data = await response.json()
+
+                    # An empty list or an error dict would blow up on json_data[0]
+                    # below; treat it as a failed connection so setup is retried
+                    if not isinstance(json_data, list) or not json_data:
+                        _LOGGER.warning(
+                            "connect: unexpected setup payload (%s)",
+                            type(json_data).__name__,
+                        )
+                        raise CannotConnect
 
                     # Store setup
                     for key in (
@@ -292,24 +301,24 @@ class Hub(DataUpdateCoordinator):
                 ) as response:
                     # 401 means the token was rejected; force re-auth next poll
                     if response.status == 401:
-                        _LOGGER.warning("Got 401, forcing re-authentication next poll")
                         self.online = False
-                        return
+                        raise UpdateFailed(
+                            "Token rejected (401), forcing re-authentication next poll"
+                        )
 
                     if response.status != 200:
-                        _LOGGER.warning(
-                            "Unexpected status %d from capabilities endpoint",
-                            response.status,
-                        )
                         self.online = False
-                        return
+                        raise UpdateFailed(
+                            f"Unexpected status {response.status} from capabilities endpoint"
+                        )
 
                     try:
                         json_data = await response.json()
-                    except ContentTypeError:
-                        _LOGGER.warning("Non-JSON response from capabilities endpoint")
+                    except ContentTypeError as err:
                         self.online = False
-                        return
+                        raise UpdateFailed(
+                            "Non-JSON response from capabilities endpoint"
+                        ) from err
 
                     if isinstance(json_data, list):
                         for dev in self._devices:
@@ -333,28 +342,26 @@ class Hub(DataUpdateCoordinator):
                                     self._timestamp_away_mode_end,
                                 )
                     else:
-                        _LOGGER.warning(
-                            "Capabilities response is not a list (got %s), forcing reconnect",
-                            type(json_data).__name__,
-                        )
                         self.online = False
+                        raise UpdateFailed(
+                            f"Capabilities response is not a list (got {type(json_data).__name__}), forcing reconnect"
+                        )
 
-            except asyncio.TimeoutError:
-                _LOGGER.warning(
-                    "Timeout fetching capabilities for device %d, forcing reconnect",
-                    self._deviceId,
-                )
+            except asyncio.TimeoutError as err:
                 self.online = False
+                raise UpdateFailed(
+                    f"Timeout fetching capabilities for device {self._deviceId}, forcing reconnect"
+                ) from err
             except ClientError as err:
-                _LOGGER.warning(
-                    "Network error fetching capabilities for device %d: %s, forcing reconnect",
-                    self._deviceId,
-                    err,
-                )
                 self.online = False
+                raise UpdateFailed(
+                    f"Network error fetching capabilities for device {self._deviceId}: {err}, forcing reconnect"
+                ) from err
 
         else:
             await self.connect()
+            if not self.online:
+                raise UpdateFailed("Cannot connect to Atlantic Cozytouch API")
 
     def devices(self):
         """Get devices list."""

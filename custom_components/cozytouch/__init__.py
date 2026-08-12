@@ -44,14 +44,25 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     await theHub.connect()
     if not theHub.online:
+        # HA discards this hub and builds a new one on each retry, so release the
+        # aiohttp session here or every attempt leaks one
+        await theHub.close()
         # tells HA to retry setup with exponential backoff until the network is available
         raise ConfigEntryNotReady("Cannot connect to Atlantic Cozytouch API")
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = theHub
 
     theHub.set_create_entities_for_unknown_entities(entry.data["create_unknown"])
-    await theHub.async_config_entry_first_refresh()
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    try:
+        # raises ConfigEntryNotReady if the first poll fails, which also gets us
+        # a retry -- but only if we hand the session back first
+        await theHub.async_config_entry_first_refresh()
+        await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    except Exception:
+        # HA does not call async_unload_entry when setup fails, so clean up here
+        hass.data[DOMAIN].pop(entry.entry_id, None)
+        await theHub.close()
+        raise
 
     return True
 
@@ -60,6 +71,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
+        theHub = hass.data[DOMAIN].pop(entry.entry_id)
+        # a reload builds a brand new hub, so the old session has to go with it
+        await theHub.close()
 
     return unload_ok
