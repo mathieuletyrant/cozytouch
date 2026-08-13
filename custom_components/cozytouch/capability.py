@@ -38,6 +38,11 @@ def get_capability_infos(  # noqa: C901
         ):
             capability["currentValueCapabilityId"] = 117
 
+        # 181 carries the mode the device is really running, which is not always
+        # the one it was asked for
+        if 181 in availableCapabilityIds:
+            capability["hvacActionCapabilityId"] = 181
+
         if modelInfos["type"] == CozytouchDeviceType.GAZ_BOILER:
             capability["name"] = "central_heating"
             capability["icon"] = "mdi:radiator"

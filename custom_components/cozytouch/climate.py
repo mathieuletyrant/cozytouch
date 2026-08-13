@@ -7,6 +7,7 @@ import logging
 from homeassistant.components.climate import (
     ClimateEntity,
     ClimateEntityFeature,
+    HVACAction,
     HVACMode,
 )
 from homeassistant.components.climate.const import (
@@ -32,6 +33,18 @@ FAN_QUIET = "quiet"
 PRESET_BASIC = "basic"
 PRESET_PROG = "prog"
 PRESET_OVERRIDE = "override"
+
+# The effective mode capability uses the same value scale as the requested mode,
+# so it is read through the model's HVACModes and then translated. HVACMode.AUTO
+# has no HVACAction counterpart on purpose: a system in auto is really heating,
+# cooling or idle, and guessing which would be worse than reporting nothing.
+HVAC_ACTIONS = {
+    HVACMode.OFF: HVACAction.OFF,
+    HVACMode.COOL: HVACAction.COOLING,
+    HVACMode.HEAT: HVACAction.HEATING,
+    HVACMode.DRY: HVACAction.DRYING,
+    HVACMode.FAN_ONLY: HVACAction.FAN,
+}
 
 
 # config flow setup
@@ -192,6 +205,16 @@ class CozytouchClimate(ClimateEntity, CozytouchSensor):
         )
         if currentMode in HVACModes:
             self._attr_hvac_mode = HVACModes[currentMode]
+
+        # Effective mode, which can differ from the requested one: on a zoned
+        # install only the master picks the mode, so a slave keeps its own
+        # request here while actually running whatever the master imposes.
+        actionId = self._capability.get("hvacActionCapabilityId", None)
+        if actionId:
+            actionRaw = self.coordinator.get_capability_value(actionId)
+            if actionRaw is not None:
+                actionMode = HVACModes.get(int(actionRaw), None)
+                self._attr_hvac_action = HVAC_ACTIONS.get(actionMode, None)
 
         # Target value
         if self._attr_hvac_mode in (
