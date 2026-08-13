@@ -293,5 +293,16 @@
             "quiet_mode":         { "name": "Mode Silence" },
             "swing_mode":         { "name": "Mode Oscillation" }
         }
+    },
+    "services": {
+        "set_schedule": {
+            "name": "Programmer une journée",
+            "description": "Écrit le même programme horaire sur un ou plusieurs jours, pour le chauffage ou le refroidissement.",
+            "fields": {
+                "program":  { "name": "Programme", "description": "Chauffage ou refroidissement." },
+                "days":     { "name": "Jours", "description": "Les jours qui recevront ce programme." },
+                "slots":    { "name": "Créneaux", "description": "Liste de paires heure/température. Le premier créneau doit commencer à 00:00, dix au maximum." }
+            }
+        }
     }
 }

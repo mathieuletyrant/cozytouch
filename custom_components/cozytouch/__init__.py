@@ -13,6 +13,7 @@ import homeassistant.helpers.config_validation as cv
 
 from . import hub
 from .const import CONF_DUMPJSON, DOMAIN
+from .services import async_register_services
 
 PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
@@ -41,6 +42,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     if "dump_json" in entry.data:
         theHub.set_dump_json(entry.data["dump_json"])
+
+    async_register_services(hass)
 
     await theHub.connect()
     if not theHub.online:
