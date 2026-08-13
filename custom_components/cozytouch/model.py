@@ -30,6 +30,9 @@ from homeassistant.components.climate.const import (
 )
 
 from .const import (
+    AIR_CIRCULATION_SPEED_HIGH,
+    AIR_CIRCULATION_SPEED_LOW,
+    AIR_CIRCULATION_SPEED_MEDIUM,
     HEATING_MODE_ECO_PLUS,
     HEATING_MODE_MANUAL,
     HEATING_MODE_PROG,
@@ -204,6 +207,14 @@ def get_model_infos(modelId: int, zoneName: str | None = None):
         modelInfos["type"] = CozytouchDeviceType.AC
         modelInfos["currentTemperatureAvailable"] = False
         modelInfos["quietModeAvailable"] = True
+
+        # Air circulation speed, all three values seen on the wire against the
+        # app's "Lente", "Moyenne" and "Rapide".
+        modelInfos["AirCirculationSpeeds"] = {
+            1: AIR_CIRCULATION_SPEED_LOW,
+            2: AIR_CIRCULATION_SPEED_MEDIUM,
+            3: AIR_CIRCULATION_SPEED_HIGH,
+        }
 
         modelInfos["fanModes"] = {
             1: FAN_LOW,

@@ -153,6 +153,16 @@
             "temperature_adjustment_max": { "name": "Température Maximale" }
         },
         "select": {
+            "air_circulation_speed":
+            {
+                "name": "Vitesse de brassage",
+                "state":
+                {
+                    "low": "Lente",
+                    "medium": "Moyenne",
+                    "high": "Rapide"
+                }
+            },
             "heating_mode":
             {
                 "name": "Mode Chauffe",
