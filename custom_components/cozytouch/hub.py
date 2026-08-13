@@ -435,11 +435,15 @@ class Hub(DataUpdateCoordinator):
         for dev in self._devices:
             if dev["deviceId"] == deviceId:
                 modelInfos = get_model_infos(dev["modelId"])
+                availableCapabilityIds = {
+                    cap["capabilityId"] for cap in dev["capabilities"]
+                }
                 for capability in dev["capabilities"]:
                     capability_infos = get_capability_infos(
                         modelInfos,
                         capability["capabilityId"],
                         capability["value"],
+                        availableCapabilityIds,
                     )
 
                     if capability_infos is None and self._create_unknown:
@@ -467,12 +471,6 @@ class Hub(DataUpdateCoordinator):
                             capabilities.append(capability_infos)
 
         return capabilities
-
-    def get_capability_infos(
-        self, modelId: int, capabilityId: int, capabilityValue: str
-    ):
-        """Get capability infos."""
-        return get_capability_infos(modelId, capabilityId, capabilityValue)
 
     def get_capability_value(
         self, capabilityId: int, defaultIfNotExist: str | None = "0"

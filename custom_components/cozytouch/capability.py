@@ -6,8 +6,19 @@ from .const import CozytouchCapabilityVariableType
 from .model import CozytouchDeviceType
 
 
-def get_capability_infos(modelInfos: dict, capabilityId: int, capabilityValue: str):  # noqa: C901
-    """Get capabilities for a device."""
+def get_capability_infos(  # noqa: C901
+    modelInfos: dict,
+    capabilityId: int,
+    capabilityValue: str,
+    availableCapabilityIds: set[int],
+):
+    """Get capabilities for a device.
+
+    availableCapabilityIds is what the device actually reports. Optional
+    features are declared per model, but the same model id is reused across
+    hardware that does not always implement them, so they are only wired up
+    when the device backs them.
+    """
     modelId = modelInfos["modelId"]
 
     capability = {"modelId": modelId, "capabilityId": capabilityId}
@@ -44,9 +55,12 @@ def get_capability_infos(modelInfos: dict, capabilityId: int, capabilityValue: s
             capability["targetCoolCapabilityId"] = 177
             capability["lowestCoolValueCapabilityId"] = 162
             capability["highestCoolValueCapabilityId"] = 163
-            capability["activityCapabilityId"] = 100506
-            capability["ecoCapabilityId"] = 100507
-            capability["boostCapabilityId"] = 100505
+            if 100506 in availableCapabilityIds:
+                capability["activityCapabilityId"] = 100506
+            if 100507 in availableCapabilityIds:
+                capability["ecoCapabilityId"] = 100507
+            if 100505 in availableCapabilityIds:
+                capability["boostCapabilityId"] = 100505
         elif modelInfos["type"] == CozytouchDeviceType.HEAT_PUMP:
             if capabilityId in (1, 7):
                 capability["name"] = "heat_pump_z1"
@@ -74,10 +88,13 @@ def get_capability_infos(modelInfos: dict, capabilityId: int, capabilityValue: s
         capability["type"] = "climate"
         capability["category"] = "sensor"
 
-        if "fanModes" in modelInfos:
+        if "fanModes" in modelInfos and 100801 in availableCapabilityIds:
             capability["fanModeCapabilityId"] = 100801
 
-        if modelInfos.get("quietModeAvailable", False):
+        if (
+            modelInfos.get("quietModeAvailable", False)
+            and 100802 in availableCapabilityIds
+        ):
             capability["quietModeCapabilityId"] = 100802
 
         if modelInfos.get("overrideModeAvailable", True):
@@ -86,9 +103,11 @@ def get_capability_infos(modelInfos: dict, capabilityId: int, capabilityValue: s
             capability["progOverrideTotalTimeCapabilityId"] = 158
             capability["progOverrideTimeCapabilityId"] = 159
 
-        if "swingModes" in modelInfos:
+        if "swingModes" in modelInfos and 100803 in availableCapabilityIds:
             capability["swingModeCapabilityId"] = 100803
-            capability["swingOnCapabilityId"] = 100804
+
+            if 100804 in availableCapabilityIds:
+                capability["swingOnCapabilityId"] = 100804
 
     elif capabilityId == 19:
         capability["name"] = "temperature_setpoint"
