@@ -139,6 +139,7 @@
             "away_mode_stop":   { "name": "Away Mode Stop" }
         },
         "number": {
+            "air_circulation_total_time": { "name": "Air Circulation Total Time" },
             "away_mode_temperature":      { "name": "Away Mode Temperature" },
             "boost_timeout_max":          { "name": "Boost Timeout Max." },
             "override_total_time":        { "name": "Override Total Time" },
@@ -164,6 +165,7 @@
             }
         },
         "sensor": {
+            "air_circulation_remaining_time": { "name": "Air Circulation Remaining Time" },
             "air_conditioner":          { "name": "Air Conditioner" },
             "away_mode":                { "name": "Away Mode" },
             "away_mode_start":          { "name": "Away Mode Start" },
@@ -269,6 +271,7 @@
             "zone_2":                   { "name": "Zone 2" }
         },
         "switch": {
+            "air_circulation":    { "name": "Air Circulation" },
             "away_mode":          { "name": "Away Mode" },
             "boost_mode":         { "name": "Boost Mode" },
             "domestic_hot_water": { "name": "Domestic Hot Water" },
