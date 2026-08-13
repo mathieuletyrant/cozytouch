@@ -43,6 +43,11 @@ def get_capability_infos(  # noqa: C901
         if 181 in availableCapabilityIds:
             capability["hvacActionCapabilityId"] = 181
 
+        # While air circulation runs it drives the unit, and the Cozytouch app
+        # locks the mode and setpoint for the duration
+        if 102024 in availableCapabilityIds:
+            capability["airCirculationCapabilityId"] = 102024
+
         if modelInfos["type"] == CozytouchDeviceType.GAZ_BOILER:
             capability["name"] = "central_heating"
             capability["icon"] = "mdi:radiator"
