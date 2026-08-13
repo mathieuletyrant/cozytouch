@@ -7,6 +7,7 @@ This has been tested using on :
   - `Atlantic Naia 2 Micro 25` gas boiler using a `Ǹavilink Radio-Connect 128` thermostat
   - `Atlantic Loria Duo 6006 R32` heat pump using a `Navilink Radio-Connect 128` thermostat
   - `Takao M3` air conditionning
+  - `HUB Navizone` air conditionning gateway driving room units
   - `Kelud 1750W` towel rack
   - `Sauter Asama Connecté II Ventilo 1750W` towel rack
 
