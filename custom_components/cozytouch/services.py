@@ -85,12 +85,20 @@ def _build_matrix(slots: list[dict]) -> str:
 def _resolve_hub(hass: HomeAssistant, entity_id: str):
     """Find the hub behind an entity."""
     registry_entry = er.async_get(hass).async_get(entity_id)
-    if registry_entry is None or registry_entry.platform != DOMAIN:
-        raise ServiceValidationError(f"{entity_id} is not a Cozytouch entity")
+    if registry_entry is None:
+        raise ServiceValidationError(
+            f"There is no entity called {entity_id}. Check the exact id in "
+            "Developer tools > States -- renaming an entity does not change it."
+        )
 
+    # The lookup below is the real check: an entity from another integration
+    # cannot have a config entry known to this one.
     hub = hass.data.get(DOMAIN, {}).get(registry_entry.config_entry_id)
     if hub is None:
-        raise ServiceValidationError(f"{entity_id} belongs to an entry that is not loaded")
+        raise ServiceValidationError(
+            f"{entity_id} is provided by {registry_entry.platform}, not by a "
+            "loaded Cozytouch entry"
+        )
 
     return hub
 
