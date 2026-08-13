@@ -164,6 +164,7 @@
             }
         },
         "sensor": {
+            "error_code":               { "name": "Code d'erreur" },
             "air_conditioner":          { "name": "Climatisation" },
             "away_mode":                { "name": "Absence" },
             "away_mode_start":          { "name": "Absence Début" },

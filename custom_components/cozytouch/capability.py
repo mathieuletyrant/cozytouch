@@ -394,6 +394,14 @@ def get_capability_infos(modelInfos: dict, capabilityId: int, capabilityValue: s
         capability["category"] = "sensor"
         capability["icon"] = "mdi:clock-outline"
 
+    elif capabilityId == 303:
+        # ERROR_CODE_ROOM, a matrix the device fills with zeroes when healthy.
+        # Surfaced raw: the list gives the name, not how to read the codes.
+        capability["name"] = "error_code"
+        capability["type"] = "string"
+        capability["category"] = "diag"
+        capability["icon"] = "mdi:alert-circle-outline"
+
     elif capabilityId == 196:
         capability["name"] = "prog_01_z1"
         capability["type"] = "prog"

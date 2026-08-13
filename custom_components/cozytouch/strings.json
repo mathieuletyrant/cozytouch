@@ -164,6 +164,7 @@
             }
         },
         "sensor": {
+            "error_code":               { "name": "Error Code" },
             "air_conditioner":          { "name": "Air Conditioner" },
             "away_mode":                { "name": "Away Mode" },
             "away_mode_start":          { "name": "Away Mode Start" },
