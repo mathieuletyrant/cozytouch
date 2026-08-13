@@ -153,6 +153,16 @@
             "temperature_adjustment_max": { "name": "Maximum Temperature" }
         },
         "select": {
+            "air_circulation_speed":
+            {
+                "name": "Air Circulation Speed",
+                "state":
+                {
+                    "low": "Low",
+                    "medium": "Medium",
+                    "high": "High"
+                }
+            },
             "heating_mode":
             {
                 "name": "Heating Mode",

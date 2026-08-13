@@ -758,6 +758,13 @@ def get_capability_infos(  # noqa: C901
         capability["category"] = "sensor"
         capability["icon"] = "mdi:arrow-oscillating"
 
+    elif capabilityId == 102004:
+        capability["name"] = "air_circulation_speed"
+        capability["type"] = "select"
+        capability["category"] = "sensor"
+        capability["icon"] = "mdi:fan"
+        capability["modelList"] = "AirCirculationSpeeds"
+
     elif capabilityId == 102021:
         # Air circulation runs for a set number of minutes; 102025 and 102026 sit
         # next to it at 15 and 300 and look like the bounds
