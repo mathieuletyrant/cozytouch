@@ -5,6 +5,16 @@ from homeassistant.const import UnitOfEnergy, UnitOfPressure
 from .const import CozytouchCapabilityVariableType
 from .model import CozytouchDeviceType
 
+PROG_DAYS = (
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+)
+
 
 def get_capability_infos(modelInfos: dict, capabilityId: int, capabilityValue: str):  # noqa: C901
     """Get capabilities for a device."""
@@ -394,73 +404,17 @@ def get_capability_infos(modelInfos: dict, capabilityId: int, capabilityValue: s
         capability["category"] = "sensor"
         capability["icon"] = "mdi:clock-outline"
 
-    elif capabilityId == 196:
-        capability["name"] = "prog_01_z1"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
+    elif 196 <= capabilityId <= 209:
+        # Weekly program: two blocks of seven capabilities, monday first. On an
+        # air conditioner the second block is the cooling program rather than a
+        # second zone -- the app calls them "Chauffage" and "Refroidissement".
+        index = capabilityId - 196
+        if modelInfos["type"] == CozytouchDeviceType.AC:
+            block = "heating" if index < 7 else "cooling"
+            capability["name"] = f"prog_{block}_{PROG_DAYS[index % 7]}"
+        else:
+            capability["name"] = f"prog_{index + 1:02d}_z{1 if index < 7 else 2}"
 
-    elif capabilityId == 197:
-        capability["name"] = "prog_02_z1"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 198:
-        capability["name"] = "prog_03_z1"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 199:
-        capability["name"] = "prog_04_z1"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 200:
-        capability["name"] = "prog_05_z1"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 201:
-        capability["name"] = "prog_06_z1"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 202:
-        capability["name"] = "prog_07_z1"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 203:
-        capability["name"] = "prog_08_z2"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 204:
-        capability["name"] = "prog_09_z2"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 205:
-        capability["name"] = "prog_10_z2"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 206:
-        capability["name"] = "prog_11_z2"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 207:
-        capability["name"] = "prog_12_z2"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 208:
-        capability["name"] = "prog_13_z2"
-        capability["type"] = "prog"
-        capability["category"] = "diag"
-
-    elif capabilityId == 209:
-        capability["name"] = "prog_14_z2"
         capability["type"] = "prog"
         capability["category"] = "diag"
 
