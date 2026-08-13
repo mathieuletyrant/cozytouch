@@ -725,6 +725,28 @@ def get_capability_infos(modelInfos: dict, capabilityId: int, capabilityValue: s
         capability["category"] = "sensor"
         capability["icon"] = "mdi:arrow-oscillating"
 
+    elif capabilityId == 102021:
+        # Air circulation runs for a set number of minutes; 102025 and 102026 sit
+        # next to it at 15 and 300 and look like the bounds
+        capability["name"] = "air_circulation_total_time"
+        capability["type"] = "minutes_adjustment_number"
+        capability["category"] = "sensor"
+        capability["icon"] = "mdi:fan-clock"
+        capability["lowest_value"] = 15
+        capability["highest_value"] = 300
+
+    elif capabilityId == 102023:
+        capability["name"] = "air_circulation_remaining_time"
+        capability["type"] = "time"
+        capability["category"] = "diagnostic"
+        capability["icon"] = "mdi:fan-clock"
+
+    elif capabilityId == 102024:
+        capability["name"] = "air_circulation"
+        capability["type"] = "switch"
+        capability["category"] = "sensor"
+        capability["icon"] = "mdi:fan"
+
     elif capabilityId == 104044:
         capability["name"] = "boost_mode"
         capability["type"] = "switch"
