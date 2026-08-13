@@ -32,7 +32,10 @@ def get_capability_infos(  # noqa: C901
         capability["lowestValueCapabilityId"] = 160
         capability["highestValueCapabilityId"] = 161
 
-        if modelInfos.get("currentTemperatureAvailable", True):
+        if (
+            modelInfos.get("currentTemperatureAvailable", True)
+            and 117 in availableCapabilityIds
+        ):
             capability["currentValueCapabilityId"] = 117
 
         if modelInfos["type"] == CozytouchDeviceType.GAZ_BOILER:
@@ -65,14 +68,20 @@ def get_capability_infos(  # noqa: C901
             if capabilityId in (1, 7):
                 capability["name"] = "heat_pump_z1"
                 capability["targetCapabilityId"] = 17
-                if modelInfos.get("currentTemperatureAvailableZ1", True):
+                if (
+                    modelInfos.get("currentTemperatureAvailableZ1", True)
+                    and 117 in availableCapabilityIds
+                ):
                     capability["currentValueCapabilityId"] = 117
                 else:
                     capability["currentValueCapabilityId"] = None
             else:
                 capability["name"] = "heat_pump_z2"
                 capability["targetCapabilityId"] = 18
-                if modelInfos.get("currentTemperatureAvailableZ2", True):
+                if (
+                    modelInfos.get("currentTemperatureAvailableZ2", True)
+                    and 118 in availableCapabilityIds
+                ):
                     capability["currentValueCapabilityId"] = 118
                 else:
                     capability["currentValueCapabilityId"] = None
