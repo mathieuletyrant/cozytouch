@@ -33,14 +33,24 @@ CONFIG_SCHEMA = vol.Schema(
 SCAN_INTERVAL = timedelta(seconds=10)
 
 
+def _setting(entry: ConfigEntry, key: str) -> bool:
+    """Read a setting, options first since that is where the options flow writes."""
+    return entry.options.get(key, entry.data.get(key, False))
+
+
+async def _async_options_updated(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Reload so the new options are picked up."""
+    await hass.config_entries.async_reload(entry.entry_id)
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Atlantic Cozytouch from a config entry."""
     theHub = hub.Hub(
         hass, entry.data["username"], entry.data["password"], entry.data["deviceId"]
     )
 
-    if "dump_json" in entry.data:
-        theHub.set_dump_json(entry.data["dump_json"])
+    theHub.set_dump_json(_setting(entry, "dump_json"))
+    entry.async_on_unload(entry.add_update_listener(_async_options_updated))
 
     await theHub.connect()
     if not theHub.online:
@@ -52,7 +62,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = theHub
 
-    theHub.set_create_entities_for_unknown_entities(entry.data["create_unknown"])
+    theHub.set_create_entities_for_unknown_entities(_setting(entry, "create_unknown"))
     try:
         # raises ConfigEntryNotReady if the first poll fails, which also gets us
         # a retry -- but only if we hand the session back first

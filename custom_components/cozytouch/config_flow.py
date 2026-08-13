@@ -8,7 +8,7 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant import config_entries, exceptions
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
 
@@ -43,6 +43,14 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     # automatically. This example uses PUSH, as the dummy hub will notify HA of
     # changes.
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_PUSH
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> OptionsFlowHandler:
+        """Return the options flow, without which HA shows no Configure button."""
+        return OptionsFlowHandler()
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
@@ -140,9 +148,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 class OptionsFlowHandler(config_entries.OptionsFlow):
     """Handles the options of a Cozytouch device."""
 
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        """Initialize options flow."""
-        self.config_entry = config_entry
+    def _current(self, key: str) -> bool:
+        """Read an option, falling back to the value picked at setup time."""
+        return self.config_entry.options.get(
+            key, self.config_entry.data.get(key, False)
+        )
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -156,11 +166,10 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             data_schema=vol.Schema(
                 {
                     vol.Required(
-                        "create_unknown",
-                        default=self.config_entry.data.get("create_unknown"),
+                        "create_unknown", default=self._current("create_unknown")
                     ): bool,
                     vol.Required(
-                        "dump_json", default=self.config_entry.data.get("dump_json")
+                        "dump_json", default=self._current("dump_json")
                     ): bool,
                 }
             ),
