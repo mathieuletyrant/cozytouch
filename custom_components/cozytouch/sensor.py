@@ -303,7 +303,12 @@ class CozytouchSensor(SensorEntity, CoordinatorEntity):
         self._config_uniq_id = config_uniq_id
         self._last_value: str | None = None
         self._device_uniq_id = config_uniq_id
-        self._attr_name = name
+
+        # Only set _attr_name when there is a name to set. Assigning None here
+        # would tell HA this entity *is* the device, which collapses every
+        # entity to the device name and skips the translation key entirely.
+        if name:
+            self._attr_name = name
 
         if value_type:
             self._value_type = value_type
@@ -393,14 +398,14 @@ class CozytouchSensor(SensorEntity, CoordinatorEntity):
                     _LOGGER.debug(
                         "%s: marking the %s sensor as unavailable: Cozytouch connection lost",
                         self._config_title,
-                        self._attr_name,
+                        self.name,
                     )
                     self._attr_available = False
         elif not self._attr_available:
             _LOGGER.info(
                 "%s: marking the %s sensor as available now !",
                 self._config_title,
-                self._attr_name,
+                self.name,
             )
             self._attr_available = True
 
