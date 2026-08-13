@@ -20,7 +20,6 @@ from homeassistant.components.climate.const import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
@@ -402,17 +401,8 @@ class CozytouchClimate(ClimateEntity, CozytouchSensor):
         value = self.coordinator.get_capability_value(capabilityId)
         return value is not None and int(value) == 1
 
-    def _refuse_while_air_circulation(self) -> None:
-        """Refuse a command the Cozytouch app also refuses while air circulates."""
-        if self._air_circulation_active():
-            raise ServiceValidationError(
-                "Air circulation is running: the mode and the target temperature "
-                "cannot be changed until it ends"
-            )
-
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
-        self._refuse_while_air_circulation()
         temperature = kwargs.get("temperature")
         if temperature is not None:
             # If we are in "Prog mode", we need to switch to override before changing the temperature
@@ -442,7 +432,6 @@ class CozytouchClimate(ClimateEntity, CozytouchSensor):
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set hvac mode."""
-        self._refuse_while_air_circulation()
         HVACModes = self._modelInfos["HVACModes"]
         for mode in HVACModes:
             if HVACModes[mode] == hvac_mode:
