@@ -58,6 +58,10 @@ def get_capability_infos(  # noqa: C901
         if 102024 in availableCapabilityIds:
             capability["airCirculationCapabilityId"] = 102024
 
+        # TEMPERATURE_UPDATE_STEP: the device states the setpoint granularity
+        if 294 in availableCapabilityIds:
+            capability["stepCapabilityId"] = 294
+
         if modelInfos["type"] == CozytouchDeviceType.GAZ_BOILER:
             capability["name"] = "central_heating"
             capability["icon"] = "mdi:radiator"
@@ -441,6 +445,14 @@ def get_capability_infos(  # noqa: C901
         capability["type"] = "switch"
         capability["category"] = "sensor"
         capability["icon"] = "mdi:clock-outline"
+
+    elif capabilityId == 303:
+        # ERROR_CODE_ROOM, a matrix the device fills with zeroes when healthy.
+        # Surfaced raw: the list gives the name, not how to read the codes.
+        capability["name"] = "error_code"
+        capability["type"] = "string"
+        capability["category"] = "diag"
+        capability["icon"] = "mdi:alert-circle-outline"
 
     elif 196 <= capabilityId <= 209:
         # Weekly program: two blocks of seven capabilities, monday first. On an

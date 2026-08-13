@@ -175,6 +175,7 @@
             }
         },
         "sensor": {
+            "error_code":                     { "name": "Code d'erreur" },
             "air_circulation_remaining_time": { "name": "Durée Brassage Restante" },
             "air_conditioner":          { "name": "Climatisation" },
             "away_mode":                { "name": "Absence" },

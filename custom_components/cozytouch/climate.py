@@ -111,6 +111,14 @@ class CozytouchClimate(ClimateEntity, CozytouchSensor):
         self._native_value = 0
         self._current_value = None
         self._attr_native_step = 0.5
+        # The device states its own setpoint granularity, so prefer it over the
+        # hardcoded half degree when it reports one
+        stepId = self._capability.get("stepCapabilityId", None)
+        if stepId:
+            step = self.coordinator.get_capability_value(stepId)
+            if step is not None and float(step) > 0:
+                self._attr_native_step = float(step)
+
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
         self._attr_min_temp = 0
         self._attr_max_temp = 30
