@@ -1,0 +1,37 @@
+set_schedule:
+  target:
+    entity:
+      integration: cozytouch
+      domain: climate
+  fields:
+    program:
+      required: true
+      example: cooling
+      selector:
+        select:
+          options:
+            - heating
+            - cooling
+    days:
+      required: true
+      example: '["monday", "tuesday"]'
+      selector:
+        select:
+          multiple: true
+          options:
+            - monday
+            - tuesday
+            - wednesday
+            - thursday
+            - friday
+            - saturday
+            - sunday
+    slots:
+      required: true
+      example: |
+        - time: "00:00"
+          temperature: 26
+        - time: "07:00"
+          temperature: 24
+      selector:
+        object:

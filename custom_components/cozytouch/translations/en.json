@@ -292,5 +292,16 @@
             "quiet_mode":         { "name": "Quiet Mode" },
             "swing_mode":         { "name": "Swing Mode" }
         }
+    },
+    "services": {
+        "set_schedule": {
+            "name": "Set a day program",
+            "description": "Writes the same time program to one or more days, for heating or cooling.",
+            "fields": {
+                "program":  { "name": "Program", "description": "Heating or cooling." },
+                "days":     { "name": "Days", "description": "The days that will receive this program." },
+                "slots":    { "name": "Slots", "description": "List of time/temperature pairs. The first slot must start at 00:00, ten at most." }
+            }
+        }
     }
 }
