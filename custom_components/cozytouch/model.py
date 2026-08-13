@@ -193,8 +193,8 @@ def get_model_infos(modelId: int, zoneName: str | None = None):
         }
 
     elif modelId == 1758:
-        # AC system gateway, same role 556 plays for the Naviclim units
-        modelInfos["name"] = "HUB Shogun"
+        # AC gateway, drives the same 557-561 units as the 556 Naviclim hub
+        modelInfos["name"] = "HUB Navizone"
         modelInfos["type"] = CozytouchDeviceType.HUB
         modelInfos["HVACModes"] = {
             0: HVACMode.OFF,
