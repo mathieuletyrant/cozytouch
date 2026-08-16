@@ -395,6 +395,15 @@ def get_capability_infos(  # noqa: C901
         capability["icon"] = "mdi:radio-tower"
 
     elif capabilityId == 172:
+        # Absence setpoint. Only the heating products act on it. An air
+        # conditioner reports it and stores what is written, but never reads it
+        # back: absence there stops the units until the return date, and the
+        # weekly program keeps driving 40 and 177 throughout. Exposing a number
+        # nothing honours would promise a setting the Cozytouch app does not
+        # even offer on this hardware.
+        if not modelInfos.get("awayModeTemperatureAvailable", True):
+            return {}
+
         capability["name"] = "away_mode_temperature"
         capability["type"] = "temperature_adjustment_number"
         capability["category"] = "sensor"
@@ -642,6 +651,15 @@ def get_capability_infos(  # noqa: C901
         capability["type"] = "string"
         capability["category"] = "diag"
         capability["icon"] = "mdi:tag"
+
+    elif capabilityId == 100261:
+        # Per-room mirror of the hub's away mode flag (152). The room units carry
+        # it alongside the absence window in 100260, which stays unmapped: the
+        # window is written for the whole setup from the hub, not room by room.
+        capability["name"] = "away_mode"
+        capability["type"] = "binary"
+        capability["category"] = "sensor"
+        capability["icon"] = "mdi:airplane"
 
     elif capabilityId == 100402:
         capability["name"] = "number_of_hours_burner"

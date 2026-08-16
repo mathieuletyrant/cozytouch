@@ -14,6 +14,7 @@ Optional :
     * fanModes : list of value/mode pairs
     * swingModes : list of value/mode pairs
     * quietModeAvailable : enable quiet mode availability (default : False)
+    * awayModeTemperatureAvailable : enable the absence setpoint (default : True)
 
 """  # noqa: D205
 
@@ -181,6 +182,7 @@ def get_model_infos(modelId: int, zoneName: str | None = None):
     elif modelId == 556:
         modelInfos["name"] = "Naviclim Hub"
         modelInfos["type"] = CozytouchDeviceType.HUB
+        modelInfos["awayModeTemperatureAvailable"] = False
         modelInfos["HVACModes"] = {
             0: HVACMode.OFF,
         }
@@ -196,10 +198,11 @@ def get_model_infos(modelId: int, zoneName: str | None = None):
         # AC gateway, drives the same 557-561 units as the 556 Naviclim hub
         modelInfos["name"] = "HUB Navizone"
         modelInfos["type"] = CozytouchDeviceType.HUB
+        modelInfos["awayModeTemperatureAvailable"] = False
         modelInfos["HVACModes"] = {
             0: HVACMode.OFF,
         }
-        
+
     elif (modelId >= 557 and modelId <= 561) or modelId == 1734:
         name = "Air Conditioner "
         if zoneName is not None:
@@ -211,6 +214,7 @@ def get_model_infos(modelId: int, zoneName: str | None = None):
 
         modelInfos["type"] = CozytouchDeviceType.AC
         modelInfos["quietModeAvailable"] = True
+        modelInfos["awayModeTemperatureAvailable"] = False
 
         modelInfos["fanModes"] = {
             1: FAN_LOW,
