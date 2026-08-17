@@ -65,7 +65,10 @@ def get_capability_infos(  # noqa: C901
             capability["highestCoolValueCapabilityId"] = 163
             if 100506 in availableCapabilityIds:
                 capability["activityCapabilityId"] = 100506
-            if 100507 in availableCapabilityIds:
+            if (
+                modelInfos.get("ecoModeAvailable", True)
+                and 100507 in availableCapabilityIds
+            ):
                 capability["ecoCapabilityId"] = 100507
             if 100505 in availableCapabilityIds:
                 capability["boostCapabilityId"] = 100505
@@ -689,6 +692,12 @@ def get_capability_infos(  # noqa: C901
             capability["icon"] = "mdi:account"
 
     elif capabilityId == 100507:
+        # Same story as the absence setpoint in 172: the air conditioners report
+        # eco mode without the Cozytouch app ever offering it. Reported is not
+        # supported, so let the model table decide.
+        if not modelInfos.get("ecoModeAvailable", True):
+            return {}
+
         capability["name"] = "eco_mode"
         capability["type"] = "switch"
         capability["category"] = "sensor"
