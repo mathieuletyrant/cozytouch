@@ -15,6 +15,7 @@ Optional :
     * swingModes : list of value/mode pairs
     * quietModeAvailable : enable quiet mode availability (default : False)
     * awayModeTemperatureAvailable : enable the absence setpoint (default : True)
+    * ecoModeAvailable : enable eco mode availability (default : True)
 
 """  # noqa: D205
 
@@ -218,6 +219,12 @@ def get_model_infos(modelId: int, zoneName: str | None = None):
         modelInfos["type"] = CozytouchDeviceType.AC
         modelInfos["quietModeAvailable"] = True
         modelInfos["awayModeTemperatureAvailable"] = False
+
+        # The room units behind a Naviclim/Navizone hub report 100507, but the
+        # Cozytouch app offers no eco mode for them anywhere. 1734 is a separate
+        # product and is left alone, no report either way on that one.
+        if modelId <= 561:
+            modelInfos["ecoModeAvailable"] = False
 
         # Air circulation speed, all three values seen on the wire against the
         # app's "Lente", "Moyenne" and "Rapide".
