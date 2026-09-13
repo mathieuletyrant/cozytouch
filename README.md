@@ -1,3 +1,10 @@
+> **This repository is not the one to install.**
+> It only holds the branches backing the pull requests still open against
+> [gduteil/cozytouch](https://github.com/gduteil/cozytouch).
+> The maintained integration lives at
+> **[mathieuletyrant/cozytouch-hacs](https://github.com/mathieuletyrant/cozytouch-hacs)** —
+> that is what HACS installs, and where issues and device reports belong.
+
 # Cozytouch
 This is an Atlantic Cozytouch cloud integration. Atlantic use multiple protocols, in my case the protocol is different than the one implemented by official integration (overkiz).
 
